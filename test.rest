@@ -1,0 +1,34 @@
+@hostname = http://localhost
+@port = {{$dotenv PORT}}
+@host = {{hostname}}:{{port}}
+### run
+POST {{host}}/candidates
+Content-Type: application/json
+
+{
+ "challenge": "3eZbrw1aBm2rZgRNFdxV2595E9CY3gmdALWMmHkvFXO7tYXAYM8P"
+}
+
+###
+POST {{host}}/candidates
+Content-Type: application/json
+
+{
+  "event": {
+    "app": "monday", 
+    "type": "create_pulse",
+    "triggerTime": "2024-07-17T20:59:16.312Z",
+    "subscriptionId": 387555018,
+    "userId": 54069320,
+    "originalTriggerUuid": null,
+    "boardId": 7012420037,
+    "pulseId": 7046750348,
+    "pulseName": "Zatz Z'Oneill",
+    "groupId": "topics",
+    "groupName": "Candidates",
+    "groupColor": "#66ccff",
+    "isTopGroup": true,
+    "columnValues": {},
+    "triggerUuid": "57b3b12be227d688f4225bb37d765fb1"
+  }
+}
