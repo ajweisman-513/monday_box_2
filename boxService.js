@@ -28,15 +28,11 @@ const config = JSON.parse(
 // }
 
 const authenticate = async () => {
-    // In node we don't need to manually decrypt the
-  // key, as the JWT library can handle this for us
   let key = {
     key: config.boxAppSettings.appAuth.privateKey,
     passphrase: config.boxAppSettings.appAuth.passphrase
   }
-
-  // We will need the authenticationUrl  again later,
-  // so it is handy to define here
+  
   const authenticationUrl = 'https://api.box.com/oauth2/token'
 
   let claims = {
@@ -54,16 +50,12 @@ const authenticate = async () => {
 
   let keyId = config.boxAppSettings.appAuth.publicKeyID
 
-  // Rather than constructing the JWT assertion manually, we are 
-  // using the jsonwebtoken library.
   let assertion = jwt.sign(claims, key, {
     // The API support "RS256", "RS384", and "RS512" encryption
     'algorithm': 'RS512',
     'keyid': keyId,
   })
 
-  // We are using the excellent axios package 
-  // to simplify the API call
   let accessToken = await axios.post(
     authenticationUrl, 
     querystring.stringify({
