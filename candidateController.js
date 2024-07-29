@@ -1,5 +1,4 @@
-import { processFolderName } from './candidateService.js';
-import { createFolderInBox } from './boxService.js';
+import { createFolderInBox } from './boxFolderService.js';
 
 export const handleCandidateRequest = async (req, res) => {
     console.log(JSON.stringify(req.body, null, 2));
@@ -11,8 +10,7 @@ export const handleCandidateRequest = async (req, res) => {
 
         if (candidateName) {
             try {
-                const orderedName = processFolderName(candidateName);
-                const boxFolderInfo = await createFolderInBox(orderedName);
+                const boxFolderInfo = await createFolderInBox(candidateName);
                 res.status(200).send(boxFolderInfo);
             } catch (error) {
                 console.error('Error creating folder in Box:', error);

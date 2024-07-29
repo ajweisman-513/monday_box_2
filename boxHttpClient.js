@@ -1,4 +1,3 @@
-// httpClient.js
 import axios from 'axios';
 import authenticate from './boxAuth.js';
 
