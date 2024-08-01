@@ -1,9 +1,9 @@
 import createClient from './boxHttpClient.js';
 import { processFolderName } from './candidateService.js';
 
-const parentFolderId = process.env.BOX_CANDIDATE_FOLDER_ID;
+const candidateFolderId = process.env.BOX_CANDIDATE_FOLDER_ID;
 
-const checkParentFolder = async (client, folderId) => {
+const verifyParentFolder = async (client, folderId) => {
     try {
         await client.get(`/folders/${folderId}`);
         return true;
@@ -15,20 +15,24 @@ const checkParentFolder = async (client, folderId) => {
 
 export const createFolderInBox = async (candidateName) => {
     try {
-        const folderName = processFolderName(candidateName);
+        const newFolderName = processFolderName(candidateName);
         const client = await createClient();
-        const parentFolderExists = await checkParentFolder(client, parentFolderId);
+        const parentFolderExists = await verifyParentFolder(client, candidateFolderId);
 
         if (!parentFolderExists) {
             console.error('Cannot access folder: Parent folder does not exist, or app not set as editor.');
             return;
         }
         const newFolder = await client.post('/folders', {
-            name: folderName,
-            parent: { id: parentFolderId }
+            name: newFolderName,
+            parent: { id: candidateFolderId }
         });
-
-        console.log('Folder created:', newFolder.data);
+        const folderInfoPacket = {
+            id: newFolder.data.id,
+            name: newFolder.data.name
+        }
+        console.log('Folder created:', folderInfoPacket);
+        return folderInfoPacket
     } catch (error) {
         console.error('Error creating folder in Box:', error);
     }
