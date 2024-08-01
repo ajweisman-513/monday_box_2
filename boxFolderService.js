@@ -11,7 +11,7 @@ const verifyParentFolder = async (client, folderId) => {
         console.error('Parent folder not found:', error);
         return false;
     }
-};
+}; 
 
 export const createFolderInBox = async (candidateName) => {
     try {
@@ -28,8 +28,8 @@ export const createFolderInBox = async (candidateName) => {
             parent: { id: candidateFolderId }
         });
         const folderInfoPacket = {
-            id: newFolder.data.id,
-            name: newFolder.data.name
+            boxFolderId: newFolder.data.id,
+            boxFolderName: newFolder.data.name
         }
         console.log('Folder created:', folderInfoPacket);
         return folderInfoPacket

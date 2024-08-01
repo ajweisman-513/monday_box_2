@@ -1,28 +1,17 @@
 import axios from 'axios';
-import dotenv from 'dotenv';
 import crypto from 'crypto';
 import fs from 'fs';
 import jwt from 'jsonwebtoken';
 import querystring from 'querystring';
 
-dotenv.config();
+const environment = process.env.NODE_ENV || 'development'; // Default to 'development' if NODE_ENV is not set
+console.log(`Running in ${environment} mode`);
+
+const configPath = process.env.NODE_ENV ? "/etc/secrets/boxConfig.json" : "boxConfig.json";
 
 const config = JSON.parse(
-  fs.readFileSync('config.json')
+  fs.readFileSync(configPath)
 );
-
-// const config = {
-//     boxAppSettings: {
-//       clientID: process.env.BOX_CLIENT_ID,
-//       clientSecret: process.env.BOX_CLIENT_SECRET,
-//       appAuth: {
-//         publicKeyID: process.env.BOX_PUBLIC_KEY_ID,
-//         privateKey: process.env.BOX_PRIVATE_KEY,
-//         passphrase: process.env.BOX_PASSPHRASE
-//       }
-//     },
-//     enterpriseID: 365398
-// }
 
 const authenticate = async () => {
   let key = {
