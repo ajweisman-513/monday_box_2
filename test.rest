@@ -23,7 +23,7 @@ Content-Type: application/json
     "originalTriggerUuid": null,
     "boardId": 7012420037,
     "pulseId": 7046750348,
-    "pulseName": "Grandma Miller6",
+    "pulseName": "Grandma Miller10",
     "groupId": "topics",
     "groupName": "Candidates",
     "groupColor": "#66ccff",

@@ -9,6 +9,8 @@ console.log(`Running in ${environment} mode`);
 
 const configPath = process.env.NODE_ENV ? "/etc/secrets/boxConfig.json" : "boxConfig.json";
 
+console.log(`configPath ${configPath}`);
+
 const config = JSON.parse(
   fs.readFileSync(configPath)
 );

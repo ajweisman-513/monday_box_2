@@ -13,9 +13,8 @@ export const handleCandidateRequest = async (req, res) => {
         if (candidateName) {
             try {
                 const boxFolderInfo = await createFolderInBox(candidateName);
-                
-                // boxFolderInfo.mondayId = mondayId;
-                // boxFolderInfo.mondayEventType = mondayEventType;
+                boxFolderInfo.mondayId = mondayId;
+                boxFolderInfo.mondayEventType = mondayEventType;
                 res.status(200).send(boxFolderInfo);
             } catch (error) {
                 console.error('Error creating folder in Box:', error);
