@@ -9,12 +9,11 @@ dotenv.config();
 
 const configPath = process.env.NODE_ENV ? "/etc/secrets/boxConfig.json" : "config.json";
 
-console.log(`configPath ${configPath}`);
-
 const config = JSON.parse(
   fs.readFileSync(configPath)
 );
-
+console.log(`configPath ${configPath}`);
+console.log('config appauth', config.boxAppSettings.appAuth)
 const authenticate = async () => {
   let key = {
     key: config.boxAppSettings.appAuth.privateKey,
