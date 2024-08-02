@@ -5,7 +5,6 @@ const candidateFolderId = process.env.BOX_CANDIDATE_FOLDER_ID;
 
 const verifyParentFolder = async (client, folderId) => {
     try {
-        console.log('candidateFolderId', folderId)
         await client.get(`/folders/${folderId}`);
         return true;
     } catch (error) {

@@ -7,11 +7,11 @@ import querystring from 'querystring';
 
 dotenv.config();
 
-const configPath = process.env.NODE_ENV ? "/etc/secrets/boxConfig.json" : "config.json";
+const configPath = process.env.NODE_ENV === 'production' 
+    ? '/etc/secrets/boxConfig.json' 
+    : 'boxConfig.json';
 
-const config = JSON.parse(
-  fs.readFileSync(configPath)
-);
+const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
 const authenticate = async () => {
   let key = {
