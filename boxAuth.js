@@ -7,22 +7,13 @@ import querystring from 'querystring';
 
 dotenv.config();
 
-const config = JSON.parse(
-  fs.readFileSync('config.json')
-);
+const configPath = process.env.NODE_ENV ? "/etc/secrets/boxConfig.json" : "config.json";
 
-// const config = {
-//     boxAppSettings: {
-//       clientID: process.env.BOX_CLIENT_ID,
-//       clientSecret: process.env.BOX_CLIENT_SECRET,
-//       appAuth: {
-//         publicKeyID: process.env.BOX_PUBLIC_KEY_ID,
-//         privateKey: process.env.BOX_PRIVATE_KEY,
-//         passphrase: process.env.BOX_PASSPHRASE
-//       }
-//     },
-//     enterpriseID: 365398
-// }
+console.log(`configPath ${configPath}`);
+
+const config = JSON.parse(
+  fs.readFileSync(configPath)
+);
 
 const authenticate = async () => {
   let key = {
