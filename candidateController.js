@@ -7,14 +7,17 @@ export const handleCandidateRequest = async (req, res) => {
         res.status(200).send(req.body);
     } else {
         const candidateName = req.body.event.pulseName;
-        const mondayId = req.body.event.pulseId;
+        const mondayItemId = req.body.event.pulseId;
+        const mondayBoardId = req.body.event.boardId;
         const mondayEventType = req.body.event.type;
 
         if (candidateName) {
             try {
                 const boxFolderInfo = await createFolderInBox(candidateName);
-                boxFolderInfo.mondayId = mondayId;
+                boxFolderInfo.mondayItemId = mondayItemId;
+                boxFolderInfo.mondayBoardId = mondayBoardId;
                 boxFolderInfo.mondayEventType = mondayEventType;
+                // await monday item Update here
                 console.log('Folder created:', boxFolderInfo);
                 res.status(200).send(boxFolderInfo);
             } catch (error) {
