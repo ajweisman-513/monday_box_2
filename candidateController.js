@@ -1,31 +1,54 @@
 import { createFolderInBox } from './boxFolderService.js';
+import { updateMondayItemColumns } from './mondayItemUpdateService.js';
 
 export const handleCandidateRequest = async (req, res) => {
     console.log(JSON.stringify(req.body, null, 2));
 
     if (req.body.challenge) {
         res.status(200).send(req.body);
-    } else {
-        const candidateName = req.body.event.pulseName;
-        const mondayItemId = req.body.event.pulseId;
-        const mondayBoardId = req.body.event.boardId;
-        const mondayEventType = req.body.event.type;
+    }
+    const candidateName = req.body.event.pulseName;
+    const mondayItemId = req.body.event.pulseId;
+    const mondayBoardId = req.body.event.boardId;
 
-        if (candidateName) {
-            try {
-                const boxFolderInfo = await createFolderInBox(candidateName);
-                boxFolderInfo.mondayItemId = mondayItemId;
-                boxFolderInfo.mondayBoardId = mondayBoardId;
-                boxFolderInfo.mondayEventType = mondayEventType;
-                // await monday item Update here
-                console.log('Folder created:', boxFolderInfo);
-                res.status(200).send(boxFolderInfo);
-            } catch (error) {
-                console.error('Error creating folder in Box:', error);
-                res.status(500).send('Error creating folder in Box');
-            }
-        } else {
-            res.status(400).send('Missing "candidateName" field in event payload');
+    if (!candidateName || !mondayItemId || !mondayBoardId) {
+        return res.status(400).send('Missing required fields in Monday event payload');
+    }
+    const mondayBoxFolderId_columnId = 'text0__1';
+    const mondayBoxLink_columnId = 'link2__1';
+    const boxFolderBaseURL = 'https://jbentities.app.box.com/folder/';
+    //const mondayEventType = req.body.event.type;
+    //const mondayCandidateBoardId = 7012420037;//ref Board DONT CHANGE
+    
+    try {
+        const boxFolderId = await createFolderInBox(candidateName);
+        if (!boxFolderId) {
+            throw new Error('Invalid or missin boxFolderId returned from createFolderInBox');
         }
+        const boxFolderURL = boxFolderBaseURL + boxFolderId;
+        const mondayBoxFolderId_columnUpdate = boxFolderId;
+        const mondayBoxLink_columnUpdate = `${boxFolderURL} BoxFolderLink`;
+        try {
+            const mondayConfirmation = await updateMondayItemColumns(
+                mondayBoardId, 
+                mondayItemId, 
+                mondayBoxFolderId_columnId, 
+                mondayBoxFolderId_columnUpdate,
+                mondayBoxLink_columnId,
+                mondayBoxLink_columnUpdate
+            );
+            console.log('Folder created and Monday.com updated:', mondayConfirmation);
+            res.status(200).send({
+                candidateName,
+                boxFolderId, 
+                monday: mondayConfirmation
+            });
+        } catch (mondayError) {
+            console.error('Error updating Monday.com item:', mondayError);
+            res.status(500).send('Error updating Monday.com item');
+        }
+    } catch (error) {
+        console.error('Error creating folder in Box:', error);
+        res.status(500).send('Error creating folder in Box');
     }
 };

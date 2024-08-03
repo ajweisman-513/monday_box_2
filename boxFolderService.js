@@ -27,11 +27,7 @@ export const createFolderInBox = async (candidateName) => {
             name: newFolderName,
             parent: { id: candidateFolderId }
         });
-        const folderInfoPacket = {
-            boxFolderId: newFolder.data.id,
-            boxFolderName: newFolder.data.name
-        }
-        return folderInfoPacket
+        return newFolder.data.id;
     } catch (error) {
         console.error('Error creating folder in Box:', error);
     }
