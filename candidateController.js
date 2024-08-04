@@ -4,9 +4,11 @@ import { updateMondayItemColumns } from './mondayItemUpdateService.js';
 export const handleCandidateRequest = async (req, res) => {
     console.log(JSON.stringify(req.body, null, 2));
 
-    if (req.body.challenge) {
-        res.status(200).send(req.body);
-    }
+        // Check if the event type is not 'create_pulse'
+    // if (req.body.event.type !== 'create_pulse') {
+    //     console.log('Event type is not "create_pulse". Ignoring request.');
+    //     return res.status(200).send({ message: 'Event type is not relevant. Request ignored.' });
+    // }
     const candidateName = req.body.event.pulseName;
     const mondayItemId = req.body.event.pulseId;
     const mondayBoardId = req.body.event.boardId;
