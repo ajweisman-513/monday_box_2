@@ -1,3 +1,4 @@
+import axios from 'axios';
 import createBoxClient from './boxHttpClient.js';
 import { processFolderName } from './boxFolderNameService.js';
 
@@ -13,7 +14,7 @@ const verifytFolderExists = async (client, folderId) => {
     }
 };
 
-export const createFolderInBox = async (candidateName) => {
+export const createFolderInBox = async (candidateName, res) => {
     try {
         const newFolderName = processFolderName(candidateName);
         const client = await createBoxClient();
@@ -21,7 +22,7 @@ export const createFolderInBox = async (candidateName) => {
 
         if (!parentFolderExists) {
             console.error('Cannot access folder: Parent folder does not exist, or app not set as editor.');
-            return null;
+            return res.status(400).send({ error: 'Parent folder does not exist or app not set as editor.' });
         }
 
         const newFolder = await client.post('/folders', {
@@ -30,8 +31,13 @@ export const createFolderInBox = async (candidateName) => {
         });
         return newFolder.data.id;
     } catch (error) {
-        console.error('Error creating folder in Box:', error);
-        return null;
+        if (axios.isAxiosError(error) && error.response && error.response?.data?.status === 409) {
+            console.warn('Folder already exists:', error.response.data.status);
+            return 'error409'
+        } else {
+            console.error('Error creating folder in Box222:', error);
+            return res.status(500).send({ error: 'Internal server error when creating folder in Box.' });
+        }
     }
 };
 

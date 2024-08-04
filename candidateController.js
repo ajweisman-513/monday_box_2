@@ -17,8 +17,9 @@ export const handleCandidateRequest = async (req, res) => {
     
     try {
         const boxFolderId = await createFolderInBox(candidateName);
-        if (!boxFolderId) {
-            throw new Error('Invalid or missin boxFolderId returned from createFolderInBox');
+        console.log('boxFolderId', boxFolderId)
+        if (boxFolderId == 'error409') {
+            return res.status(200).send({ message: '409 - Folder already exists in Box.' });
         }
         const boxFolderURL = boxFolderBaseURL + boxFolderId;
         const mondayBoxFolderId_columnUpdate = boxFolderId;
@@ -44,7 +45,7 @@ export const handleCandidateRequest = async (req, res) => {
             res.status(500).send('Error updating Monday.com item');
         }
     } catch (error) {
-        console.error('Error creating folder in Box:', error);
-        res.status(500).send('Error creating folder in Box');
+        console.log('Error creating folder in Box333:', error);
+        res.status(200).send('Error creating folder in Box');
     }
 };

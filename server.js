@@ -15,7 +15,7 @@ console.log(`Running in ${environment} mode`);
 app.use(bodyParser.json());
 app.use(handleChallengeRequest);
 app.use(handleTesting);
-app.use(candidateRouter);
+app.use(candidateRouter); 
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
