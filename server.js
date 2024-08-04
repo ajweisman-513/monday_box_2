@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import candidateRouter from './router.js';
 import { handleChallengeRequest } from './challengeMiddleware.js';
+import { handleTesting } from './testingMiddleware.js';
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ console.log(`Running in ${environment} mode`);
 
 app.use(bodyParser.json());
 app.use(handleChallengeRequest);
+app.use(handleTesting);
 app.use(candidateRouter);
 
 app.listen(port, () => {

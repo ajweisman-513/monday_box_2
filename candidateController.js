@@ -1,14 +1,9 @@
-import { createFolderInBox } from './boxFolderService.js';
+import { createFolderInBox, updateParentFolderId } from './boxFolderService.js';
 import { updateMondayItemColumns } from './mondayItemUpdateService.js';
 
 export const handleCandidateRequest = async (req, res) => {
     console.log(JSON.stringify(req.body, null, 2));
 
-        // Check if the event type is not 'create_pulse'
-    // if (req.body.event.type !== 'create_pulse') {
-    //     console.log('Event type is not "create_pulse". Ignoring request.');
-    //     return res.status(200).send({ message: 'Event type is not relevant. Request ignored.' });
-    // }
     const candidateName = req.body.event.pulseName;
     const mondayItemId = req.body.event.pulseId;
     const mondayBoardId = req.body.event.boardId;
@@ -19,8 +14,6 @@ export const handleCandidateRequest = async (req, res) => {
     const mondayBoxFolderId_columnId = 'text0__1';
     const mondayBoxLink_columnId = 'link2__1';
     const boxFolderBaseURL = 'https://jbentities.app.box.com/folder/';
-    //const mondayEventType = req.body.event.type;
-    //const mondayCandidateBoardId = 7012420037;//ref Board DONT CHANGE
     
     try {
         const boxFolderId = await createFolderInBox(candidateName);
@@ -30,6 +23,7 @@ export const handleCandidateRequest = async (req, res) => {
         const boxFolderURL = boxFolderBaseURL + boxFolderId;
         const mondayBoxFolderId_columnUpdate = boxFolderId;
         const mondayBoxLink_columnUpdate = `${boxFolderURL} BoxFolderLink`;
+        
         try {
             const mondayConfirmation = await updateMondayItemColumns(
                 mondayBoardId, 

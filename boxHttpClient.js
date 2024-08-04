@@ -1,7 +1,7 @@
 import axios from 'axios';
 import authenticate from './boxAuth.js';
 
-const createClient = async () => {
+const createBoxClient = async () => {
   const accessToken = await authenticate();
   
   return axios.create({
@@ -12,4 +12,4 @@ const createClient = async () => {
   });
 };
 
-export default createClient;
+export default createBoxClient;

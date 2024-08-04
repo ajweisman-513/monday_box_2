@@ -1,9 +1,9 @@
-import createClient from './boxHttpClient.js';
+import createBoxClient from './boxHttpClient.js';
 import { processFolderName } from './boxFolderNameService.js';
 
 const candidateFolderId = process.env.BOX_CANDIDATE_FOLDER_ID;
 
-const verifyParentFolder = async (client, folderId) => {
+const verifytFolderExists = async (client, folderId) => {
     try {
         await client.get(`/folders/${folderId}`);
         return true;
@@ -16,36 +16,41 @@ const verifyParentFolder = async (client, folderId) => {
 export const createFolderInBox = async (candidateName) => {
     try {
         const newFolderName = processFolderName(candidateName);
-        const client = await createClient();
-        const parentFolderExists = await verifyParentFolder(client, candidateFolderId);
+        const client = await createBoxClient();
+        const parentFolderExists = await verifytFolderExists(client, candidateFolderId);
 
         if (!parentFolderExists) {
             console.error('Cannot access folder: Parent folder does not exist, or app not set as editor.');
             return null;
         }
 
-        try {
-            const newFolder = await client.post('/folders', {
-                name: newFolderName,
-                parent: { id: candidateFolderId }
-            });
-            return newFolder.data.id;
-        } catch (error) {
-            if (error.response && error.response.status === 409) { // Handle "name already exists" error
-                console.warn(`Folder "${newFolderName}" already exists. Retrieving existing folder ID.`);
-                const existingFolder = await client.get('/folders', {
-                    params: {
-                        parent_id: candidateFolderId,
-                        name: newFolderName
-                    }
-                });
-                return existingFolder.data.entries[0].id; // Return the ID of the existing folder
-            } else {
-                throw error; // Rethrow other errors
-            }
-        }
+        const newFolder = await client.post('/folders', {
+            name: newFolderName,
+            parent: { id: candidateFolderId }
+        });
+        return newFolder.data.id;
     } catch (error) {
         console.error('Error creating folder in Box:', error);
+        return null;
+    }
+};
+
+export const updateParentFolderId = async (folderId, newParentFolderId) => {
+    const client = await createBoxClient();
+    const folderExists = await verifytFolderExists(client, folderId);
+
+    if (!folderExists) {
+        console.error('Specified folder does not exist or cannot be accessed.');
+        return null;
+    }
+
+    try {
+        const response = await client.put(`/folders/${folderId}`, {
+            parent: { id: newParentFolderId }
+        });
+        return response.data; // Return the updated folder's ID
+    } catch (error) {
+        console.error('Error updating folder parent in Box:', error);
         return null;
     }
 };

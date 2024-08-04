@@ -23,7 +23,7 @@ Content-Type: application/json
     "originalTriggerUuid": null,
     "boardId": 7012420037,
     "pulseId": 7155586945,
-    "pulseName": "New One5",
+    "pulseName": "New Two_2",
     "groupId": "topics",
     "groupName": "Candidates",
     "groupColor": "#66ccff",
