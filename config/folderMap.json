@@ -17,6 +17,11 @@
     "Scottsdale": "az",
     "Paradise Valley": "az",
     "Summerlin": "nv"
+  },
+  "mondayBoxColumnIdKeys": {
+    "7012420037": "text0__1", 
+    "6898402339": "text__1",
+    "7092034819": "text__1"
   }
 }
   

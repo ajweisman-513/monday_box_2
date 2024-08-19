@@ -2,8 +2,7 @@ import axios from 'axios';
 import createBoxClient from './httpClients/boxHttpClient.js';
 import { determineNewBoxParentFolder } from './boxIdentifyParentService.js';
 import { processFolderName } from './helpers/boxFolderNameService.js';
-
-const candidateFolderId = process.env.BOX_CANDIDATE_FOLDER_ID;
+import { loadConfig } from './utils/loadConfig.js';
 
 export const getFolderById = async (client, folderId) => {
     try {
@@ -14,10 +13,13 @@ export const getFolderById = async (client, folderId) => {
     }
 };
 
-export const createFolderInBox = async (candidateName, res) => {
+export const createFolderInBox = async (candidateName) => {
     try {
-        const newFolderName = processFolderName(candidateName);
         const client = await createBoxClient();
+        const newFolderName = processFolderName(candidateName);
+
+        const folderMapConfig = loadConfig('folderMap.json');
+        const candidateFolderId = folderMapConfig.boxFolderIds.candidates;
         const parentFolderExists = await getFolderById(client, candidateFolderId);
 
         if (!parentFolderExists) {
@@ -42,31 +44,27 @@ export const createFolderInBox = async (candidateName, res) => {
 };
 
 export const updateParentFolderId = async (mondayBoardId, boxChildFolderId, locationName) => {
-    const client = await createBoxClient();
-    const folderExists = await getFolderById(client, boxChildFolderId);
-
-    if (!folderExists) {
-        console.error(`During updateParentFolderId folder does not exist, or app not set as editor.`);
-        return res.status(200).send({ error: 'Parent folder does not exist or app not set as editor.' });
-    }
-
-    const updatedParentFolderId = determineNewBoxParentFolder(mondayBoardId, locationName);
-    console.log('updatedParentFolderId', updatedParentFolderId)
     try {
+        const client = await createBoxClient();
+        const folderExists = await getFolderById(client, boxChildFolderId);
+
+        if (!folderExists) {
+            console.error(`During updateParentFolderId folder does not exist, or app not set as editor.`);
+            return res.status(200).send({ error: 'Parent folder does not exist or app not set as editor.' });
+        }
+
+        const updatedParentFolderId = determineNewBoxParentFolder(mondayBoardId, locationName);
         const response = await client.put(`/folders/${boxChildFolderId}`, {
             parent: { id: updatedParentFolderId }
         });
 
-        const pkg = {
+        return {
             boxFolderName: response.data.name,
             modified_at: response.data.modified_at,
             newParent: response.data.parent
         }
-        return pkg;
     } catch (error) {
         console.error('Error updating folder parent in Box:', error);
         return null;
     }
 };
-
-//export const createBoxOfferLetterRequest = async () => {

@@ -1,18 +1,26 @@
 import { createFolderInBox, updateParentFolderId } from './boxFolderService.js';
 import { getMondayItemDetails, updateMondayItemColumns } from './mondayItemService.js';
-import { retryGetMondayItem } from './helpers/retryGetMondayItem.js';
+import { loadConfig } from './utils/loadConfig.js';
+
+// Utility function to load and get column key
+const getColumnKey = (boardId) => {
+    const folderMapConfig = loadConfig('folderMap.json');
+    return folderMapConfig.mondayBoxColumnIdKeys[String(boardId)];
+};
+
+// Utility function to extract column values from Monday item
+const getColumnValue = (colVals, columnId) => {
+    return colVals.find(({ id }) => id === columnId)?.text;
+};
 
 export const createNewBoxFolder = async (req, res) => {
-    console.log(JSON.stringify(req.body, null, 2));
 
     const candidateName = req.body.event.pulseName;
     const mondayItemId = req.body.event.pulseId;
     const mondayBoardId = req.body.event.boardId;
 
-    if (!candidateName || !mondayItemId || !mondayBoardId) {
-        return res.status(400).send('Missing required fields in Monday event payload');
-    }
-    const mondayBoxFolderId_columnId = 'text0__1';
+    const columnKey = getColumnKey(mondayBoardId);
+    const mondayBoxFolderId_columnId = columnKey;
     const mondayBoxLink_columnId = 'link2__1';
     const boxFolderBaseURL = 'https://jbentities.app.box.com/folder/';
     
@@ -49,15 +57,16 @@ export const createNewBoxFolder = async (req, res) => {
 };
 
 export const updateBoxParentFolder = async (req, res) => {
+
     const { pulseId: mondayItemId, boardId: mondayNewBoardId } = req.body.event;
     console.log('Monday.com move request:', { mondayItemId, mondayNewBoardId });
-   
-// Retry fetching mondayItem up to 2 more times if necessary
-    const { 
-        itemName,
-        itemBoxFolderId,
-        itemLocationName
-    } = await retryGetMondayItem(getMondayItemDetails, mondayItemId);
+    
+    const mondayItem = await getMondayItemDetails(mondayItemId);
+    const { column_values: colVals, name: itemName } = mondayItem;
+    const columnKey = getColumnKey(mondayNewBoardId);
+
+    const itemBoxFolderId = getColumnValue(colVals, columnKey);
+    const itemLocationName = getColumnValue(colVals, "label__1");
 
     console.log('Monday Item Retieval', { itemName, itemBoxFolderId, itemLocationName });
 
@@ -68,25 +77,9 @@ export const updateBoxParentFolder = async (req, res) => {
     }
 
     const boxUpdateResponse = await updateParentFolderId(
-        mondayNewBoardId, itemBoxFolderId, itemLocationName
-    )
+        String(mondayNewBoardId), itemBoxFolderId, itemLocationName
+    );
     console.log('boxUpdateResponse', boxUpdateResponse);
     console.log('_____________D_O_N_E____________');
     res.status(200).send({ mondayNewBoardId, boxUpdateResponse });
 };
-
-
-    // try {
-    // updateParentFolderId
-    //     const folderId = await getFolderIdByPulseId(mondayItemId); // Placeholder for folder retrieval logic
-    //     if (!folderId) {
-    //         return res.status(404).send('No Box folder found for the given pulse ID');
-    //     }
-
-    //     await updateParentFolderId(folderId, newParentFolderId);
-    //     res.status(200).send('Parent folder updated successfully');
-    // } catch (error) {
-    //     console.error('Error updating parent folder in Box:', error);
-    //     res.status(500).send('Error updating parent folder in Box');
-    // }
-//};
