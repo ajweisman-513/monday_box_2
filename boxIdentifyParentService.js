@@ -13,19 +13,18 @@ export const determineNewBoxParentFolder = (boardId, locationName) => {
         : path.join(__dirname, 'config/folderMap.json');
     const folderMap = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
 
-    const { folderIds, parentFolderMap, mondayBoardIds } = folderMap;
+    const { mondayBoardIds, boxFolderIds, parentFolderMap } = folderMap;
 
     const boardIdStr = String(boardId);
    
-    let parentFolderId;
-    // Check if the board is "candidates" or "inactive"
-    if (boardIdStr === mondayBoardIds.candidates || boardIdStr === mondayBoardIds.inactive) {
-        const key = boardIdStr === mondayBoardIds.candidates ? 'candidates' : 'inactive';
-        parentFolderId = folderIds[key];
-    } else if (boardIdStr === mondayBoardIds.active) {
+    let parentId;
+
+    if (boardIdStr === mondayBoardIds.candidates) parentId = boxFolderIds['candidates'];
+    if (boardIdStr === mondayBoardIds.inactive) parentId = boxFolderIds['inactive'];
+    if (boardIdStr === mondayBoardIds.active) {
         const parentKey = parentFolderMap[locationName];
-        parentFolderId = folderIds[parentKey];
+        parentId = boxFolderIds[parentKey];
     };
 
-    return parentFolderId;
+    return parentId;
 };

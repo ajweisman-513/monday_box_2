@@ -1,13 +1,13 @@
 import axios from 'axios';
 import createBoxClient from './httpClients/boxHttpClient.js';
+import { determineNewBoxParentFolder } from './boxIdentifyParentService.js';
 import { processFolderName } from './boxFolderNameService.js';
 
 const candidateFolderId = process.env.BOX_CANDIDATE_FOLDER_ID;
 
 export const getFolderById = async (client, folderId) => {
     try {
-        const folderInfo = await client.get(`/folders/${folderId}`);
-        return folderInfo;
+        return await client.get(`/folders/${folderId}`);
     } catch (error) {
         console.error('Folder not found:', error);
         return false;
@@ -41,20 +41,28 @@ export const createFolderInBox = async (candidateName, res) => {
     }
 };
 
-export const updateParentFolderId = async (folderId, newParentFolderId) => {
+export const updateParentFolderId = async (mondayBoardId, boxChildFolderId, locationName) => {
     const client = await createBoxClient();
-    const folderExists = await getFolderById(client, folderId);
+    const folderExists = await getFolderById(client, boxChildFolderId);
 
     if (!folderExists) {
-        console.error('Specified folder does not exist or cannot be accessed.');
-        return null;
+        console.error(`During updateParentFolderId folder does not exist, or app not set as editor.`);
+        return res.status(200).send({ error: 'Parent folder does not exist or app not set as editor.' });
     }
 
+    const updatedParentFolderId = determineNewBoxParentFolder(mondayBoardId, locationName);
+    console.log('updatedParentFolderId', updatedParentFolderId)
     try {
-        const response = await client.put(`/folders/${folderId}`, {
-            parent: { id: newParentFolderId }
+        const response = await client.put(`/folders/${boxChildFolderId}`, {
+            parent: { id: updatedParentFolderId }
         });
-        return response.data; // Return the updated folder's ID
+
+        const pkg = {
+            boxFolderName: response.data.name,
+            modified_at: response.data.modified_at,
+            newParent: response.data.parent
+        }
+        return pkg;
     } catch (error) {
         console.error('Error updating folder parent in Box:', error);
         return null;

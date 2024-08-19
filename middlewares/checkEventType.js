@@ -4,6 +4,10 @@ export const checkEventType = (expectedEventType) => {
   
       if (eventType !== expectedEventType) {
         // Respond with a 200 status code and stop further processing
+        console.log({
+          eventType,
+          message: `Event type is not ${expectedEventType}` 
+        })
         return res.status(200).send({ message: `Event type is not ${expectedEventType}` });
       }
   

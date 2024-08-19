@@ -19,7 +19,6 @@ export const getMondayItemDetails = async (itemId) => {
 
   try {
     const response = await client.post('', { query });
-    console.log('Monday.com item details retrieved successfully:', response.data.data.items[0]);
     return response.data.data.items[0];
   } catch (error) {
     console.error('Error retrieving item details from Monday.com:', error);

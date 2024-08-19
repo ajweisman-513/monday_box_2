@@ -69,6 +69,12 @@ Content-Type: application/json
 }
 
 ###
+   # Monday
+   # "candidates": "7012420037"
+   # "active": "6898402339"
+   # "inactive": "7092034819"
+
+###
 POST {{host}}/employees/move
 Content-Type: application/json
 
@@ -80,8 +86,8 @@ Content-Type: application/json
     "subscriptionId": 398985217,
     "userId": 54069320,
     "originalTriggerUuid": null,
-    "boardId": 7012420037,
-    "pulseId": 6915969862,
+    "boardId": 6898402339,
+    "pulseId": 7248387320,
     "sourceGroupId": "new_group12194__1",
     "sourceBoardId": 6898402339,
     "destGroupId": "topics",

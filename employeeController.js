@@ -1,8 +1,7 @@
 import { createFolderInBox, updateParentFolderId } from './boxFolderService.js';
 import { getMondayItemDetails, updateMondayItemColumns } from './mondayItemService.js';
-import { determineNewBoxParentFolder } from './boxIdentifyParentService.js';
 
-export const createNewCandidateBoxFolder = async (req, res) => {
+export const createNewBoxFolder = async (req, res) => {
     console.log(JSON.stringify(req.body, null, 2));
 
     const candidateName = req.body.event.pulseName;
@@ -48,23 +47,27 @@ export const createNewCandidateBoxFolder = async (req, res) => {
     }
 };
 
-export const updateCandidateBoxParentFolder = async (req, res) => {
-    console.log(JSON.stringify(req.body, null, 2));
-
-    const { pulseId: mondayItemId, boardId: mondayNewBoardId } = req.body.event;
-    
+export const updateBoxParentFolder = async (req, res) => {
+const { pulseId: mondayItemId, boardId: mondayNewBoardId } = req.body.event;
+    console.log('Monday.com move request:', { mondayItemId, mondayNewBoardId });
+   
     const mondayItem = await getMondayItemDetails(mondayItemId);
+
     const colVals = mondayItem.column_values;
 
-    const location = colVals.find(({ id }) => id === "label__1")?.text;
-    const boxFolderId = colVals.find(({ id }) => id === "text0__1")?.text;
+    const itemBoxFolderId = colVals.find(({ id }) => id === "text0__1")?.text;
+    const itemLocationName = colVals.find(({ id }) => id === "label__1")?.text;
+    console.log(
+        'Monday Item initial Retieval',
+        { name: mondayItem.name, itemBoxFolderId, itemLocationName }
+    );
 
-    const parentFolderId = determineNewBoxParentFolder(mondayNewBoardId, location);
-
-    console.log('mondayNewBoardId', mondayNewBoardId);
-    console.log('boxNewParentFolderId', parentFolderId);  // Outputs: "280726250117"
-    
-    res.status(200).send({ boxFolderId, parentFolderId });
+    const boxUpdateResponse = await updateParentFolderId(
+        mondayNewBoardId, itemBoxFolderId, itemLocationName
+    )
+    console.log('boxUpdateResponse', boxUpdateResponse);
+    console.log('_____________D_O_N_E____________');
+    res.status(200).send({ mondayNewBoardId, boxUpdateResponse });
 };
 
 
