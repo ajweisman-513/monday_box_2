@@ -65,7 +65,7 @@ const { pulseId: mondayItemId, boardId: mondayNewBoardId } = req.body.event;
     // Check if either itemBoxFolderId or itemLocationName is missing
     if (!itemBoxFolderId || !itemLocationName) {
         console.error('Missing itemBoxFolderId or itemLocationName', { itemBoxFolderId, itemLocationName });
-        return res.status(200).send({
+        return res.status(404).send({
             error: true,
             message: 'Missing necessary data to update the Box parent folder. Please resend the request.',
             missingFields: {
