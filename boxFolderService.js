@@ -1,7 +1,7 @@
 import axios from 'axios';
 import createBoxClient from './httpClients/boxHttpClient.js';
 import { determineNewBoxParentFolder } from './boxIdentifyParentService.js';
-import { processFolderName } from './boxFolderNameService.js';
+import { processFolderName } from './helpers/boxFolderNameService.js';
 
 const candidateFolderId = process.env.BOX_CANDIDATE_FOLDER_ID;
 

@@ -1,5 +1,6 @@
 import { createFolderInBox, updateParentFolderId } from './boxFolderService.js';
 import { getMondayItemDetails, updateMondayItemColumns } from './mondayItemService.js';
+import { retryGetMondayItem } from './helpers/retryGetMondayItem.js';
 
 export const createNewBoxFolder = async (req, res) => {
     console.log(JSON.stringify(req.body, null, 2));
@@ -48,31 +49,22 @@ export const createNewBoxFolder = async (req, res) => {
 };
 
 export const updateBoxParentFolder = async (req, res) => {
-const { pulseId: mondayItemId, boardId: mondayNewBoardId } = req.body.event;
+    const { pulseId: mondayItemId, boardId: mondayNewBoardId } = req.body.event;
     console.log('Monday.com move request:', { mondayItemId, mondayNewBoardId });
    
-    const mondayItem = await getMondayItemDetails(mondayItemId);
+// Retry fetching mondayItem up to 2 more times if necessary
+    const { 
+        itemName,
+        itemBoxFolderId,
+        itemLocationName
+    } = await retryGetMondayItem(getMondayItemDetails, mondayItemId);
 
-    const colVals = mondayItem.column_values;
-
-    const itemBoxFolderId = colVals.find(({ id }) => id === "text0__1")?.text;
-    const itemLocationName = colVals.find(({ id }) => id === "label__1")?.text;
-    console.log(
-        'Monday Item initial Retieval',
-        { name: mondayItem.name, itemBoxFolderId, itemLocationName }
-    );
+    console.log('Monday Item Retieval', { itemName, itemBoxFolderId, itemLocationName });
 
     // Check if either itemBoxFolderId or itemLocationName is missing
     if (!itemBoxFolderId || !itemLocationName) {
         console.error('Missing itemBoxFolderId or itemLocationName', { itemBoxFolderId, itemLocationName });
-        return res.status(404).send({
-            error: true,
-            message: 'Missing necessary data to update the Box parent folder. Please resend the request.',
-            missingFields: {
-                itemBoxFolderId: !itemBoxFolderId ? 'Missing' : 'Present',
-                itemLocationName: !itemLocationName ? 'Missing' : 'Present',
-            }
-        });
+        return res.status(404).send({ error: true, message: 'No data to update Box parent.' });
     }
 
     const boxUpdateResponse = await updateParentFolderId(
