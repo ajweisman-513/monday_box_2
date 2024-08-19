@@ -4,12 +4,18 @@ import crypto from 'crypto';
 import fs from 'fs';
 import jwt from 'jsonwebtoken';
 import querystring from 'querystring';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 
+// Get the __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const configPath = process.env.NODE_ENV === 'production' 
     ? '/etc/secrets/boxConfig.json' 
-    : 'boxConfig.json';
+    : path.join(__dirname, 'boxConfig.json');
 
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 

@@ -2,7 +2,7 @@
 @port = {{$dotenv PORT}}
 @host = {{hostname}}:{{port}}
 ### run
-POST {{host}}/candidates
+POST {{host}}/
 Content-Type: application/json
 
 {
@@ -10,7 +10,7 @@ Content-Type: application/json
 }
 
 ###
-POST {{host}}/candidates
+POST {{host}}/employees/new
 Content-Type: application/json
 
 {
@@ -23,12 +23,74 @@ Content-Type: application/json
     "originalTriggerUuid": null,
     "boardId": 7012420037,
     "pulseId": 7156137851,
-    "pulseName": "New Two_4",
+    "pulseName": "New Three_2",
     "groupId": "topics",
     "groupName": "Candidates",
     "groupColor": "#66ccff",
     "isTopGroup": true,
     "columnValues": {},
     "triggerUuid": "57b3b12be227d688f4225bb37d765fb1"
+  }
+}
+
+###
+POST {{host}}/employees/sign
+Content-Type: application/json
+
+{
+  "app": "monday",
+  "type": "update_column_value",
+  "triggerTime": "2024-08-04T23:27:13.054Z",
+  "subscriptionId": 393811586,
+  "userId": 54069320,
+  "originalTriggerUuid": null,
+  "boardId": 7012420093,
+  "groupId": "topics",
+  "pulseId": 7155888004,
+  "pulseName": "Coach Offer Letter",
+  "columnId": "status",
+  "columnType": "color",
+  "columnTitle": "Signatures Status",
+  "value": {
+    "label": {
+      "index": 4,
+      "text": "Needs Generation",
+      "style": {},
+      "is_done": false
+    },
+    "post_id": null
+  },
+  "previousValue": null,
+  "changedAt": 1722814032.589889,
+  "isTopGroup": true,
+  "triggerUuid": "6c5fe4cb520adf502463b5169b33f649",
+  "parentItemId": "7155887989",
+  "parentItemBoardId": "7012420037"
+}
+
+###
+POST {{host}}/employees/move
+Content-Type: application/json
+
+{
+  "event": {
+    "app": "monday",
+    "type": "move_pulse_into_board",
+    "triggerTime": "2024-08-18T03:25:03.322Z",
+    "subscriptionId": 398985217,
+    "userId": 54069320,
+    "originalTriggerUuid": null,
+    "boardId": 7012420037,
+    "pulseId": 6915969862,
+    "sourceGroupId": "new_group12194__1",
+    "sourceBoardId": 6898402339,
+    "destGroupId": "topics",
+    "destGroup": {
+      "id": "topics",
+      "title": "Candidates",
+      "color": "#66ccff",
+      "is_top_group": true
+    },
+    "triggerUuid": "0dd1288dd57cc9a00626a65a83d7f19e"
   }
 }

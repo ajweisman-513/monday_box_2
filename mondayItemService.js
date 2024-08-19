@@ -1,4 +1,4 @@
-import createMondayClient from './mondayHttpClient.js';
+import createMondayClient from './httpClients/mondayHttpClient.js';
 
 // Function to get an item's details by its ID
 export const getMondayItemDetails = async (itemId) => {
@@ -20,7 +20,7 @@ export const getMondayItemDetails = async (itemId) => {
   try {
     const response = await client.post('', { query });
     console.log('Monday.com item details retrieved successfully:', response.data.data.items[0]);
-    return response.data;
+    return response.data.data.items[0];
   } catch (error) {
     console.error('Error retrieving item details from Monday.com:', error);
     throw error;
@@ -53,7 +53,7 @@ export const updateMondayItemColumns = async (
       }
     }
   `;
-  console.log('FINAL mutation', mutation)
+  //console.log('FINAL mutation', mutation)
   try {
     const response = await client.post('', { query: mutation });
     return response.data;

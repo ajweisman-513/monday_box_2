@@ -1,15 +1,15 @@
 import axios from 'axios';
-import createBoxClient from './boxHttpClient.js';
+import createBoxClient from './httpClients/boxHttpClient.js';
 import { processFolderName } from './boxFolderNameService.js';
 
 const candidateFolderId = process.env.BOX_CANDIDATE_FOLDER_ID;
 
-const verifytFolderExists = async (client, folderId) => {
+export const getFolderById = async (client, folderId) => {
     try {
-        await client.get(`/folders/${folderId}`);
-        return true;
+        const folderInfo = await client.get(`/folders/${folderId}`);
+        return folderInfo;
     } catch (error) {
-        console.error('Parent folder not found:', error);
+        console.error('Folder not found:', error);
         return false;
     }
 };
@@ -18,7 +18,7 @@ export const createFolderInBox = async (candidateName, res) => {
     try {
         const newFolderName = processFolderName(candidateName);
         const client = await createBoxClient();
-        const parentFolderExists = await verifytFolderExists(client, candidateFolderId);
+        const parentFolderExists = await getFolderById(client, candidateFolderId);
 
         if (!parentFolderExists) {
             console.error('Cannot access folder: Parent folder does not exist, or app not set as editor.');
@@ -43,7 +43,7 @@ export const createFolderInBox = async (candidateName, res) => {
 
 export const updateParentFolderId = async (folderId, newParentFolderId) => {
     const client = await createBoxClient();
-    const folderExists = await verifytFolderExists(client, folderId);
+    const folderExists = await getFolderById(client, folderId);
 
     if (!folderExists) {
         console.error('Specified folder does not exist or cannot be accessed.');
@@ -60,3 +60,5 @@ export const updateParentFolderId = async (folderId, newParentFolderId) => {
         return null;
     }
 };
+
+//export const createBoxOfferLetterRequest = async () => {

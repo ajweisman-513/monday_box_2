@@ -1,5 +1,5 @@
 import axios from 'axios';
-import authenticate from './boxAuth.js';
+import authenticate from '../config/boxAuth.js';
 
 const createBoxClient = async () => {
   const accessToken = await authenticate();

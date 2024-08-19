@@ -1,0 +1,21 @@
+{
+    "folderIds": {
+      "candidates": "259421762221",
+      "inactive": "259427511936",
+      "az": "280474501229",
+      "nv": "280474943292"
+    },
+    "parentFolderMap": {
+      "Gilbert": "az",
+      "Henderson": "nv",
+      "North Scottsdale": "az",
+      "Paradise Valley": "az",
+      "Summerlin": "nv"
+    },
+    "mondayBoardIds": { 
+      "candidates": "7012420037", 
+      "active": "7012420038",
+      "inactive": "7012420039"
+    }
+  }
+  

@@ -1,7 +1,8 @@
 import { createFolderInBox, updateParentFolderId } from './boxFolderService.js';
-import { updateMondayItemColumns } from './mondayItemUpdateService.js';
+import { getMondayItemDetails, updateMondayItemColumns } from './mondayItemService.js';
+import { determineNewBoxParentFolder } from './boxIdentifyParentService.js';
 
-export const handleCandidateRequest = async (req, res) => {
+export const createNewCandidateBoxFolder = async (req, res) => {
     console.log(JSON.stringify(req.body, null, 2));
 
     const candidateName = req.body.event.pulseName;
@@ -17,7 +18,7 @@ export const handleCandidateRequest = async (req, res) => {
     
     try {
         const boxFolderId = await createFolderInBox(candidateName);
-        console.log('boxFolderId', boxFolderId)
+
         if (boxFolderId == 'error409') {
             return res.status(200).send({ message: '409 - Folder already exists in Box.' });
         }
@@ -34,12 +35,9 @@ export const handleCandidateRequest = async (req, res) => {
                 mondayBoxLink_columnId,
                 mondayBoxLink_columnUpdate
             );
-            console.log('Folder created and Monday.com updated:', mondayConfirmation);
-            res.status(200).send({
-                candidateName,
-                boxFolderId, 
-                monday: mondayConfirmation
-            });
+            const response = { candidateName, boxFolderId, mondayConfirmation };
+            console.log('Folder created and Monday.com updated:', response);
+            res.status(200).send(response);
         } catch (mondayError) {
             console.error('Error updating Monday.com item:', mondayError);
             res.status(500).send('Error updating Monday.com item');
@@ -49,3 +47,38 @@ export const handleCandidateRequest = async (req, res) => {
         res.status(200).send('Error creating folder in Box');
     }
 };
+
+export const updateCandidateBoxParentFolder = async (req, res) => {
+    console.log(JSON.stringify(req.body, null, 2));
+
+    const { pulseId: mondayItemId, boardId: mondayNewBoardId } = req.body.event;
+    
+    const mondayItem = await getMondayItemDetails(mondayItemId);
+    const colVals = mondayItem.column_values;
+
+    const location = colVals.find(({ id }) => id === "label__1")?.text;
+    const boxFolderId = colVals.find(({ id }) => id === "text0__1")?.text;
+
+    const parentFolderId = determineNewBoxParentFolder(mondayNewBoardId, location);
+
+    console.log('mondayNewBoardId', mondayNewBoardId);
+    console.log('boxNewParentFolderId', parentFolderId);  // Outputs: "280726250117"
+    
+    res.status(200).send({ boxFolderId, parentFolderId });
+};
+
+
+    // try {
+    // updateParentFolderId
+    //     const folderId = await getFolderIdByPulseId(mondayItemId); // Placeholder for folder retrieval logic
+    //     if (!folderId) {
+    //         return res.status(404).send('No Box folder found for the given pulse ID');
+    //     }
+
+    //     await updateParentFolderId(folderId, newParentFolderId);
+    //     res.status(200).send('Parent folder updated successfully');
+    // } catch (error) {
+    //     console.error('Error updating parent folder in Box:', error);
+    //     res.status(500).send('Error updating parent folder in Box');
+    // }
+//};
