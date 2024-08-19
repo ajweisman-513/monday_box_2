@@ -62,6 +62,19 @@ const { pulseId: mondayItemId, boardId: mondayNewBoardId } = req.body.event;
         { name: mondayItem.name, itemBoxFolderId, itemLocationName }
     );
 
+    // Check if either itemBoxFolderId or itemLocationName is missing
+    if (!itemBoxFolderId || !itemLocationName) {
+        console.error('Missing itemBoxFolderId or itemLocationName', { itemBoxFolderId, itemLocationName });
+        return res.status(200).send({
+            error: true,
+            message: 'Missing necessary data to update the Box parent folder. Please resend the request.',
+            missingFields: {
+                itemBoxFolderId: !itemBoxFolderId ? 'Missing' : 'Present',
+                itemLocationName: !itemLocationName ? 'Missing' : 'Present',
+            }
+        });
+    }
+
     const boxUpdateResponse = await updateParentFolderId(
         mondayNewBoardId, itemBoxFolderId, itemLocationName
     )
